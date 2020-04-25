@@ -6,11 +6,16 @@ import android.os.Bundle;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -43,7 +48,7 @@ public class Dessert extends AppCompatActivity {
         recipe = findViewById(R.id.dessert);
 
         // create a reference to the recipe collection
-        CollectionReference recipesRef = fStore.collection("recipe");
+       final CollectionReference recipesRef = fStore.collection("recipe");
 
         // Create a query against the collection
         Query query = recipesRef.whereEqualTo("categoryName", "Dessert");
@@ -67,12 +72,26 @@ public class Dessert extends AppCompatActivity {
                 return new CategoryViewHolder(view);
             }
 
+
             @Override
-            protected void onBindViewHolder(@NonNull CategoryViewHolder holder, int position, @NonNull CategoryModel model) {
+            protected void onBindViewHolder(@NonNull CategoryViewHolder holder, final int position, @NonNull final CategoryModel model) {
 
                 holder.list_name.setText(model.getRecipeName());
                 holder.list_desc.setText(model.getRecipeDescription());
+                holder.numLike.setText(String.valueOf(model.getNumLike()));
+                holder.likeRecipe.setOnClickListener(new View.OnClickListener() {
 
+                    @Override
+                    public void onClick(View v) {
+
+                        //Can't detect the document id of recipe
+                        fStore.collection("recipe")
+                                .document("7PTZO72zL1Ob4XHNFlLo")
+                                .update("numLike", FieldValue.increment(1));
+
+
+                        }
+                });
 
             }
         };
@@ -83,22 +102,25 @@ public class Dessert extends AppCompatActivity {
         recipe.setLayoutManager(new LinearLayoutManager(this));
         recipe.setAdapter(adapter);
 
-
     }
 
     private class CategoryViewHolder extends RecyclerView.ViewHolder {
 
         private TextView list_name;
         private TextView list_desc;
+        private ImageView likeRecipe;
+        private TextView numLike;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
 
             list_name = itemView.findViewById(R.id.list_recipeName);
             list_desc = itemView.findViewById(R.id.list_recipeDescription);
-
+            likeRecipe = itemView.findViewById(R.id.numLikes_btn);
+            numLike = itemView.findViewById(R.id.numLikes_Lbl);
 
         }
+
     }
 
     @Override
@@ -115,7 +137,6 @@ public class Dessert extends AppCompatActivity {
             adapter.stopListening();
 
         }
-
 
     }
 

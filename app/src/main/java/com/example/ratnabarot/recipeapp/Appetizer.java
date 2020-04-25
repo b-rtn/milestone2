@@ -6,9 +6,8 @@ import android.os.Bundle;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -19,17 +18,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Appetizer extends AppCompatActivity {
 
     RecyclerView recipe;
     FirebaseFirestore fStore;
-
-
     private FirestoreRecyclerAdapter adapter;
 
     @Override
@@ -69,22 +69,28 @@ public class Appetizer extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull CategoryViewHolder holder, int position, @NonNull CategoryModel model) {
+            protected void onBindViewHolder(@NonNull CategoryViewHolder holder, final int position, @NonNull final CategoryModel model) {
 
                 holder.list_name.setText(model.getRecipeName());
                 holder.list_desc.setText(model.getRecipeDescription());
+                holder.numLike.setText(String.valueOf(model.getNumLike()));
+                holder.likeRecipe.setOnClickListener(new View.OnClickListener() {
 
+                    @Override
+                    public void onClick(View v) {
 
+                        fStore.collection("recipe")
+                                .document("0u7nZEENnPyhktS3gRms")
+                                .update("numLike", FieldValue.increment(1));
+
+                    }
+                });
             }
         };
-
-
 
         recipe.setHasFixedSize(true);
         recipe.setLayoutManager(new LinearLayoutManager(this));
         recipe.setAdapter(adapter);
-
-
 
     }
 
@@ -94,14 +100,16 @@ public class Appetizer extends AppCompatActivity {
 
         private TextView list_name;
         private TextView list_desc;
+        private ImageView likeRecipe;
+        private TextView numLike;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
 
             list_name = itemView.findViewById(R.id.list_recipeName);
             list_desc = itemView.findViewById(R.id.list_recipeDescription);
-
-
+            likeRecipe = itemView.findViewById(R.id.numLikes_btn);
+            numLike = itemView.findViewById(R.id.numLikes_Lbl);
         }
     }
 
@@ -119,12 +127,7 @@ public class Appetizer extends AppCompatActivity {
             adapter.stopListening();
 
         }
-
-
     }
-
-
-
 
     //Onclick event for smoothie
     //Clicking on the smoothie button will take the user to Smoothie Recipes
@@ -156,5 +159,42 @@ public class Appetizer extends AppCompatActivity {
         //Takes to a second activity(options in smoothies & their ingredients) when the button is clicked.
         Intent openAppetizer5Recipes = new Intent(Appetizer.this, SweetPotatoTots.class);
         startActivity(openAppetizer5Recipes);
+    }
+
+    //Dashboard - Options Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_appetizer, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        switch(id){
+            case R.id.action_home:
+                Intent openHome = new Intent(this, Categories.class);
+                startActivity(openHome);
+                return true;
+            case R.id.action_feedback:
+                Intent i = new Intent(Intent.ACTION_SEND);
+                i.setType("message/rfc822");
+                i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"barotr@csp.edu", "nicholsd1@csp.edu", "hennemas@csp.edu"});
+                i.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+                i.putExtra(Intent.EXTRA_TEXT   , "Enter your feedback here");
+                try {
+                    startActivity(Intent.createChooser(i, "Send mail..."));
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

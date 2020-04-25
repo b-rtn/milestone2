@@ -10,6 +10,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -73,8 +74,18 @@ public class Soup extends AppCompatActivity {
 
                 holder.list_name.setText(model.getRecipeName());
                 holder.list_desc.setText(model.getRecipeDescription());
+                holder.numLike.setText(String.valueOf(model.getNumLike()));
+                holder.likeRecipe.setOnClickListener(new View.OnClickListener() {
 
+                    @Override
+                    public void onClick(View v) {
 
+                        fStore.collection("recipe")
+                                .document("AED25YGlddZMVBkVDDZu")
+                                .update("numLike", FieldValue.increment(1));
+
+                    }
+                });
             }
         };
 
@@ -92,14 +103,16 @@ public class Soup extends AppCompatActivity {
 
         private TextView list_name;
         private TextView list_desc;
+        private ImageView likeRecipe;
+        private TextView numLike;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
 
             list_name = itemView.findViewById(R.id.list_recipeName);
             list_desc = itemView.findViewById(R.id.list_recipeDescription);
-
-
+            likeRecipe = itemView.findViewById(R.id.numLikes_btn);
+            numLike = itemView.findViewById(R.id.numLikes_Lbl);
         }
     }
 

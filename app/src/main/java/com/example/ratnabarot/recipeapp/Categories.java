@@ -25,23 +25,6 @@ public class Categories extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent login = new Intent (Categories.this, MainActivity.class);
-                startActivity(login);
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_scrolling, menu);
-        return true;
     }
 
     public void appetizer(View view){
@@ -80,6 +63,13 @@ public class Categories extends AppCompatActivity {
         startActivity(openDesserts);
     }
 
+    //Dashboard - Options Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_scrolling, menu);
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -89,11 +79,8 @@ public class Categories extends AppCompatActivity {
         int id = item.getItemId();
 
         switch(id){
-            case R.id.action_settings:
-                Toast.makeText(this, "settings selected", Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.action_home:
-                Intent openHome = new Intent(this, Login.class);
+                Intent openHome = new Intent(this, Categories.class);
                 startActivity(openHome);
                 return true;
             case R.id.action_feedback:
@@ -110,10 +97,6 @@ public class Categories extends AppCompatActivity {
                 return true;
         }
 
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
         return super.onOptionsItemSelected(item);
     }
 }
